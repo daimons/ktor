@@ -6,7 +6,9 @@ import org.jetbrains.ktor.util.*
 /**
  * Represents an application call being handled by [Routing]
  */
-open class RoutingApplicationCall(call: ApplicationCall,
+open class RoutingApplicationCall(val call: ApplicationCall,
+                                  override val receivePipeline: ApplicationReceivePipeline,
+                                  override val responsePipeline: ApplicationResponsePipeline,
                                   val route: Route,
                                   private val resolvedValues: ValuesMap) : ApplicationCall by call {
     override val parameters: ValuesMap by lazy {

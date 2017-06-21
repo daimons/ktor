@@ -48,14 +48,17 @@ open class Route(val parent: Route?, val selector: RouteSelector) : ApplicationC
         return cachedPipeline ?: run {
             var current: Route? = this
             val pipeline = ApplicationCallPipeline()
-            val entryPipelines = mutableListOf<ApplicationCallPipeline>()
+            val routePipelines = mutableListOf<ApplicationCallPipeline>()
             while (current != null) {
-                entryPipelines.add(current)
+                routePipelines.add(current)
                 current = current.parent
             }
 
-            for (index in entryPipelines.lastIndex downTo 0) {
-                pipeline.phases.merge(entryPipelines[index].phases)
+            for (index in routePipelines.lastIndex downTo 0) {
+                val routePipeline = routePipelines[index]
+                pipeline.phases.merge(routePipeline.phases)
+                pipeline.receivePipeline.phases.merge(routePipeline.receivePipeline.phases)
+                pipeline.responsePipeline.phases.merge(routePipeline.responsePipeline.phases)
             }
 
             val handlers = handlers

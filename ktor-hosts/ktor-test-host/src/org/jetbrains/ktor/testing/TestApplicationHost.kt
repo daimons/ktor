@@ -12,13 +12,6 @@ class TestApplicationHost(environment: ApplicationHostEnvironment = createTestEn
         pipeline.intercept(HostPipeline.Call) {
             call.application.execute(call)
         }
-        pipeline.intercept(HostPipeline.Before) { call ->
-            call.response.pipeline.intercept(ApplicationResponsePipeline.Before) {
-                proceed()
-                (call as? TestApplicationCall)?.requestHandled = true
-            }
-        }
-
     }
 
     override fun start(wait: Boolean): ApplicationHost {

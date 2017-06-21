@@ -32,9 +32,8 @@ class StatusPages(config: Configuration) {
 
     suspend private fun intercept(context: PipelineContext<ApplicationCall>) {
         var statusHandled = false
-        context.call.response.pipeline.intercept(ApplicationResponsePipeline.After) {
+        context.call.responsePipeline.intercept(ApplicationResponsePipeline.After) { (_, message) ->
             if (!statusHandled) {
-                val message = subject
                 val status = when (message) {
                     is FinalContent -> message.status
                     is HttpStatusCode -> message
@@ -44,6 +43,7 @@ class StatusPages(config: Configuration) {
                 if (handler != null) {
                     statusHandled = true
                     context.handler(status!!)
+                    context.finish() // TODO: Should we always finish? Handler could skip responding…
                 }
             }
         }
@@ -84,8 +84,8 @@ class StatusPages(config: Configuration) {
     }
 }
 
-fun StatusPages.Configuration.statusFile(vararg status: HttpStatusCode, filePattern: String) {
-    status(*status) { status ->
+fun StatusPages.Configuration.statusFile(vararg code: HttpStatusCode, filePattern: String) {
+    status(*code) { status ->
         val path = filePattern.replace("#", status.value.toString())
         val message = call.resolveResource(path)
         if (message == null) {
@@ -93,5 +93,6 @@ fun StatusPages.Configuration.statusFile(vararg status: HttpStatusCode, filePatt
         } else {
             call.respond(message)
         }
+        finish()
     }
 }

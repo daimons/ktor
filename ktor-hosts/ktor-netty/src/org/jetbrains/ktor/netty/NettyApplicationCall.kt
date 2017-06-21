@@ -27,20 +27,22 @@ internal class NettyApplicationCall(application: Application,
     override val response = NettyApplicationResponse(this, context)
     override val bufferPool = NettyByteBufferPool(context)
 
-    suspend override fun respond(message: Any) {
-        try {
-            super.respond(message)
-        } finally {
-            completed = true
-
+    init {
+        responsePipeline.intercept(ApplicationResponsePipeline.Host) {
             try {
-                response.close()
+
             } finally {
+                completed = true
+
                 try {
-                    request.close()
+                    response.close()
                 } finally {
-                    if (closed.compareAndSet(false, true)) {
-                        finalizeConnection()
+                    try {
+                        request.close()
+                    } finally {
+                        if (closed.compareAndSet(false, true)) {
+                            finalizeConnection()
+                        }
                     }
                 }
             }

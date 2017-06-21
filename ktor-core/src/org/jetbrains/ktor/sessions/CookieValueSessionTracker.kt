@@ -20,7 +20,6 @@ class CookieValueSessionTracker<S : Any>(val cookieSettings: SessionCookiesSetti
             val deserialize = serializer.deserialize(value)
             processSession(deserialize)
         }
-        context.proceed()
     }
 
     override suspend fun unassign(call: ApplicationCall) {

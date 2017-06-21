@@ -4,9 +4,9 @@ import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.cio.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.http.*
-import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
+import sun.plugin.dom.exception.*
 import java.nio.*
 
 abstract class BaseApplicationCall(override val application: Application) : ApplicationCall {
@@ -15,23 +15,23 @@ abstract class BaseApplicationCall(override val application: Application) : Appl
     var responded = false
         private set
 
-    suspend override fun respond(message: Any) {
-        val phases = response.pipeline.phases
-        val pipelineContext = PipelineContext(phases.interceptors(), message)
-        pipelineContext.proceed()
-        if (responded)
-            return
-        responded = true
-        val value = pipelineContext.subject
-        when (value) {
-            is FinalContent -> {
-                respondFinalContent(value)
-            }
-            else -> {
-                application.log.warning("Response pipeline didn't finish with the FinalContent, but ended with $value")
+    override val receivePipeline = ApplicationReceivePipeline().apply {
+        phases.merge(application.receivePipeline.phases)
+    }
+
+    override final val responsePipeline = ApplicationResponsePipeline().apply {
+        phases.merge(application.responsePipeline.phases)
+        intercept(ApplicationResponsePipeline.Host) {
+            if (responded)
+                throw InvalidStateException("Response is already sent")
+            responded = true
+            val response = subject.value
+            if (response is FinalContent) {
+                respondFinalContent(response)
+            } else {
+                application.log.warning("Response pipeline didn't finish with the FinalContent, but ended with $response")
             }
         }
-        pipelineContext.finish()
     }
 
     protected fun commitHeaders(o: FinalContent) {

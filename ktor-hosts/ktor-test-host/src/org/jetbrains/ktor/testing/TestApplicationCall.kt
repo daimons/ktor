@@ -11,9 +11,11 @@ import java.time.*
 import java.util.concurrent.*
 
 class TestApplicationCall(application: Application) : BaseApplicationCall(application) {
-    suspend override fun respond(message: Any) {
-        super.respond(message)
-        response.close()
+    init {
+        responsePipeline.intercept(ApplicationResponsePipeline.Host) {
+            requestHandled = true
+            response.close()
+        }
     }
 
     override val request: TestApplicationRequest = TestApplicationRequest(this)

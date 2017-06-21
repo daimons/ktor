@@ -105,9 +105,9 @@ class StatusPageTest {
             }
 
             application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.response.pipeline.intercept(ApplicationResponsePipeline.Transform) {
-                    if (subject is O)
-                        proceedWith(HttpStatusCode.NotFound)
+                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { (_, message) ->
+                    if (message is O)
+                        proceedWith(ApplicationSendRequest(call, HttpStatusCode.NotFound))
                 }
             }
 
@@ -157,8 +157,8 @@ class StatusPageTest {
 
         withTestApplication {
             application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.response.pipeline.intercept(ApplicationResponsePipeline.Transform) {
-                    if (subject is O)
+                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { (_, message) ->
+                    if (message is O)
                         throw IllegalStateException()
                 }
             }

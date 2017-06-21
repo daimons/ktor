@@ -81,6 +81,8 @@ class PipelinePhases<TSubject : Any>(vararg phases: PipelinePhase) {
     }
 
     fun merge(from: PipelinePhases<TSubject>) {
+        // TODO: fast path if current phases is empty
+
         val fromPhases = from._phases
         for (index in 0..fromPhases.lastIndex) {
             val fromContent = fromPhases[index]

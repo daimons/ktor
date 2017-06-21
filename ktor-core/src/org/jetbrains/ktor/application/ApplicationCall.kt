@@ -1,5 +1,6 @@
 package org.jetbrains.ktor.application
 
+import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.util.*
 
 /**
@@ -32,7 +33,20 @@ interface ApplicationCall {
     val parameters: ValuesMap
 
     /**
-     * Sends a [message] as a response
+     * Pipeline for transforming request content into receive objects
      */
-    suspend fun respond(message: Any)
+    val receivePipeline: ApplicationReceivePipeline
+
+    /**
+     * Pipeline for transforming responded object into [FinalContent]
+     */
+    val responsePipeline: ApplicationResponsePipeline
 }
+
+/**
+ * Sends a [message] as a response
+ */
+suspend fun ApplicationCall.respond(message: Any) {
+    responsePipeline.execute(ApplicationSendRequest(this, message))
+}
+

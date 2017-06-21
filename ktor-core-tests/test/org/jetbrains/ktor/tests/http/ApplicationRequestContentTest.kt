@@ -58,15 +58,13 @@ class ApplicationRequestContentTest {
         withTestApplication {
             val value = IntList(listOf(1, 2, 3, 4))
 
-            application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.request.pipeline.intercept(ApplicationReceivePipeline.Transform) { query ->
-                    if (query.type != IntList::class) return@intercept
-                    val message = query.value as? IncomingContent ?: return@intercept
+            application.receivePipeline.intercept(ApplicationReceivePipeline.Transform) { query ->
+                if (query.type != IntList::class) return@intercept
+                val message = query.value as? IncomingContent ?: return@intercept
 
-                    val string = message.readText()
-                    val transformed = IntList.parse(string)
-                    proceedWith(ApplicationReceiveRequest(query.call, query.type, transformed))
-                }
+                val string = message.readText()
+                val transformed = IntList.parse(string)
+                proceedWith(ApplicationReceiveRequest(query.call, query.type, transformed))
             }
 
             application.intercept(ApplicationCallPipeline.Call) { call ->

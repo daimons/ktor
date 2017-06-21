@@ -14,13 +14,13 @@ object HeadRequestSupport : ApplicationFeature<ApplicationCallPipeline, Unit, Un
     override fun install(pipeline: ApplicationCallPipeline, configure: Unit.() -> Unit) {
         Unit.configure()
 
-        pipeline.intercept(ApplicationCallPipeline.Infrastructure) {
+        pipeline.intercept(ApplicationCallPipeline.Infrastructure) { call ->
             if (call.request.local.method == HttpMethod.Head) {
-                it.response.pipeline.phases.insertBefore(ApplicationResponsePipeline.TransferEncoding, HeadPhase)
-                it.response.pipeline.intercept(HeadPhase) {
-                    val message = subject
+                call.responsePipeline.phases.insertBefore(ApplicationResponsePipeline.TransferEncoding, HeadPhase)
+                call.responsePipeline.intercept(HeadPhase) { (_, message) ->
                     if (message is FinalContent && message !is FinalContent.NoContent) {
-                        proceedWith(HeadResponse(message))
+                        val response = HeadResponse(message)
+                        proceedWith(ApplicationSendRequest(call, response))
                     }
                 }
 

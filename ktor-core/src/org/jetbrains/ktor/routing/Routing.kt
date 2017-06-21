@@ -15,9 +15,17 @@ class Routing(val application: Application) : Route(parent = null, selector = Ro
     }
 
     suspend private fun executeResult(context: PipelineContext<ApplicationCall>, route: Route, parameters: ValuesMap) {
-        val routingCall = RoutingApplicationCall(context.call, route, parameters)
-        val pipeline = route.buildPipeline()
-        pipeline.execute(routingCall)
+        val routingCallPipeline = route.buildPipeline()
+        val receivePipeline = ApplicationReceivePipeline().apply {
+            phases.merge(context.call.receivePipeline.phases)
+            phases.merge(routingCallPipeline.receivePipeline.phases)
+        }
+        val responsePipeline = ApplicationResponsePipeline().apply {
+            phases.merge(context.call.responsePipeline.phases)
+            phases.merge(routingCallPipeline.responsePipeline.phases)
+        }
+        val routingCall = RoutingApplicationCall(context.call, receivePipeline, responsePipeline, route, parameters)
+        routingCallPipeline.execute(routingCall)
     }
 
     companion object Feature : ApplicationFeature<Application, Routing, Routing> {

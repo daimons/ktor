@@ -14,11 +14,6 @@ interface ApplicationResponse {
     val call: ApplicationCall
 
     /**
-     * Pipeline for transforming responded object into FinalContent
-     */
-    val pipeline: ApplicationResponsePipeline
-
-    /**
      * Headers for this response
      */
     val headers: ResponseHeaders
@@ -43,12 +38,11 @@ interface ApplicationResponse {
      * or does nothing (may call or not call [block]).
      * Exact behaviour is up to host implementation.
      */
-    fun push(block: ResponsePushBuilder.() -> Unit) {
-    }
+    fun push(block: ResponsePushBuilder.() -> Unit) {}
 }
 
-open class ApplicationResponsePipeline : Pipeline<Any>(Before, Transform, Render, ContentEncoding, TransferEncoding, After) {
-    companion object RespondPhase {
+open class ApplicationResponsePipeline : Pipeline<ApplicationSendRequest>(Before, Transform, Render, ContentEncoding, TransferEncoding, After, Host) {
+    companion object Phases {
         val Before = PipelinePhase("Before")
 
         val Transform = PipelinePhase("Transform")
@@ -60,6 +54,11 @@ open class ApplicationResponsePipeline : Pipeline<Any>(Before, Transform, Render
         val TransferEncoding = PipelinePhase("TransferEncoding")
 
         val After = PipelinePhase("After")
+
+        val Host = PipelinePhase("Host")
     }
 }
+
+data class ApplicationSendRequest(val call: ApplicationCall, val value: Any)
+
 

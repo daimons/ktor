@@ -52,19 +52,19 @@ open class ServletApplicationCall(application: Application,
 
     override suspend fun responseChannel(): WriteChannel = responseChannelOverride ?: responseChannel.value
 
-    suspend override fun respond(message: Any) {
-        super.respond(message)
-
-        if (!completed) {
-            completed = true
-            request.close()
-            if (responseChannel.isInitialized()) {
-                responseChannel.value.apply {
-                    flush()
-                    close()
+    init {
+        responsePipeline.intercept(ApplicationResponsePipeline.Host) {
+            if (!completed) {
+                completed = true
+                request.close()
+                if (responseChannel.isInitialized()) {
+                    responseChannel.value.apply {
+                        flush()
+                        close()
+                    }
+                } else {
+                    servletResponse.flushBuffer()
                 }
-            } else {
-                servletResponse.flushBuffer()
             }
         }
     }
