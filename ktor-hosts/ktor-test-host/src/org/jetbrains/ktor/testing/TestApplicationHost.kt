@@ -27,7 +27,7 @@ class TestApplicationHost(environment: ApplicationHostEnvironment = createTestEn
     fun handleRequest(setup: TestApplicationRequest.() -> Unit): TestApplicationCall {
         val call = createCall(setup)
         runBlocking {
-            pipeline.execute(call, call)
+            pipeline.execute(call)
         }
         return call
     }
@@ -42,7 +42,7 @@ class TestApplicationHost(environment: ApplicationHostEnvironment = createTestEn
             setup()
         }
 
-        runBlocking(Unconfined) { pipeline.execute(call, call) }
+        runBlocking(Unconfined) { pipeline.execute(call) }
 
         return call
     }

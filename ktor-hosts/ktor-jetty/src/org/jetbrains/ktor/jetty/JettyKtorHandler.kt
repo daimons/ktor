@@ -8,6 +8,7 @@ import org.jetbrains.ktor.cio.*
 import org.jetbrains.ktor.cio.ByteBufferPool
 import org.jetbrains.ktor.host.*
 import org.jetbrains.ktor.http.*
+import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.response.*
 import java.nio.*
 import java.util.concurrent.*
@@ -56,7 +57,7 @@ internal class JettyKtorHandler(val environment: ApplicationHostEnvironment, val
 
             launch(dispatcher) {
                 try {
-                    pipeline().execute(call, call)
+                    pipeline().execute(call)
                 } finally {
                     request.asyncContext?.complete()
                 }

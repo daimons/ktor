@@ -8,7 +8,7 @@ import org.jetbrains.ktor.util.*
 /**
  * Represents an application call being handled by [Routing]
  */
-open class RoutingApplicationCall(val call: ApplicationCall,
+open class RoutingApplicationCall(call: ApplicationCall,
                                   override val receivePipeline: ApplicationReceivePipeline,
                                   override val sendPipeline: ApplicationSendPipeline,
                                   val route: Route,
