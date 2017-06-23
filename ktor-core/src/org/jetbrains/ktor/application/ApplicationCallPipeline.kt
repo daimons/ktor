@@ -2,9 +2,7 @@ package org.jetbrains.ktor.application
 
 import org.jetbrains.ktor.pipeline.*
 
-val PipelineContext<ApplicationCall>.call: ApplicationCall get() = subject
-
-open class ApplicationCallPipeline() : Pipeline<ApplicationCall>(Infrastructure, Call, Fallback) {
+open class ApplicationCallPipeline : Pipeline<Unit>(Infrastructure, Call, Fallback) {
     /**
      * Pipeline for transforming request content into receive objects
      */

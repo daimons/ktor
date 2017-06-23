@@ -12,27 +12,27 @@ class StatusPages(config: Configuration) {
     val statuses = HashMap(config.statuses)
 
     class Configuration {
-        val exceptions = mutableMapOf<Class<*>, suspend PipelineContext<ApplicationCall>.(Throwable) -> Unit>()
-        val statuses = mutableMapOf<HttpStatusCode, suspend PipelineContext<ApplicationCall>.(HttpStatusCode) -> Unit>()
+        val exceptions = mutableMapOf<Class<*>, suspend PipelineContext<Unit>.(Throwable) -> Unit>()
+        val statuses = mutableMapOf<HttpStatusCode, suspend PipelineContext<Unit>.(HttpStatusCode) -> Unit>()
 
-        inline fun <reified T : Throwable> exception(noinline handler: suspend PipelineContext<ApplicationCall>.(T) -> Unit) =
+        inline fun <reified T : Throwable> exception(noinline handler: suspend PipelineContext<Unit>.(T) -> Unit) =
                 exception(T::class.java, handler)
 
-        fun <T : Throwable> exception(klass: Class<T>, handler: suspend PipelineContext<ApplicationCall>.(T) -> Unit) {
+        fun <T : Throwable> exception(klass: Class<T>, handler: suspend PipelineContext<Unit>.(T) -> Unit) {
             @Suppress("UNCHECKED_CAST")
-            exceptions.put(klass, handler as suspend PipelineContext<ApplicationCall>.(Throwable) -> Unit)
+            exceptions.put(klass, handler as suspend PipelineContext<Unit>.(Throwable) -> Unit)
         }
 
-        fun status(vararg status: HttpStatusCode, handler: suspend PipelineContext<ApplicationCall>.(HttpStatusCode) -> Unit) {
+        fun status(vararg status: HttpStatusCode, handler: suspend PipelineContext<Unit>.(HttpStatusCode) -> Unit) {
             status.forEach {
                 statuses.put(it, handler)
             }
         }
     }
 
-    suspend private fun intercept(context: PipelineContext<ApplicationCall>) {
+    suspend private fun intercept(context: PipelineContext<Unit>) {
         var statusHandled = false
-        context.call.responsePipeline.intercept(ApplicationResponsePipeline.After) { (_, message) ->
+        context.call.responsePipeline.intercept(ApplicationResponsePipeline.After) { message ->
             if (!statusHandled) {
                 val status = when (message) {
                     is FinalContent -> message.status
@@ -61,7 +61,7 @@ class StatusPages(config: Configuration) {
         }
     }
 
-    private fun findHandlerByType(clazz: Class<*>): (suspend PipelineContext<ApplicationCall>.(Throwable) -> Unit)? {
+    private fun findHandlerByType(clazz: Class<*>): (suspend PipelineContext<Unit>.(Throwable) -> Unit)? {
         exceptions[clazz]?.let { return it }
         clazz.superclass?.let {
             findHandlerByType(it)?.let { return it }

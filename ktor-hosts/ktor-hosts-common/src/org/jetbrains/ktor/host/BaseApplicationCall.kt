@@ -25,7 +25,7 @@ abstract class BaseApplicationCall(override val application: Application) : Appl
             if (responded)
                 throw InvalidStateException("Response is already sent")
             responded = true
-            val response = subject.value
+            val response = subject
             if (response is FinalContent) {
                 respondFinalContent(response)
             } else {

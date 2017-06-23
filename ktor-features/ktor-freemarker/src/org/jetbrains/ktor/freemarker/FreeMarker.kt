@@ -20,10 +20,10 @@ class FreeMarker(val config: Configuration) {
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): FreeMarker {
             val config = Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).apply(configure)
             val feature = FreeMarker(config)
-            pipeline.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { (call, value) ->
+            pipeline.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { value ->
                 if (value is FreeMarkerContent) {
                     val response = feature.process(value)
-                    proceedWith(ApplicationSendRequest(call, response))
+                    proceedWith(response)
                 }
             }
             return feature

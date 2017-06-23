@@ -26,9 +26,9 @@ fun Application.main() {
     install(CallLogging)
 
     val gson = GsonBuilder().create()
-    intercept(ApplicationCallPipeline.Infrastructure) { call ->
+    intercept(ApplicationCallPipeline.Infrastructure) {
         if (call.request.acceptItems().any { it.value == "application/json" }) {
-            call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { (_, message) ->
+            call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { message ->
                 TextContent(gson.toJson(message), ContentType.Application.Json)
             }
         }

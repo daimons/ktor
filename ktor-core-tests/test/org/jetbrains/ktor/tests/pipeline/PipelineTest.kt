@@ -2,14 +2,18 @@ package org.jetbrains.ktor.tests.pipeline
 
 import kotlinx.coroutines.experimental.*
 import org.jetbrains.ktor.pipeline.*
+import org.jetbrains.ktor.testing.*
 import org.junit.*
 import kotlin.test.*
 
 class PipelineTest {
+    val environment = createTestEnvironment()
+    val host = TestApplicationHost(environment).apply { start() }
+    val call = TestApplicationCall(host.application)
     val callPhase = PipelinePhase("Call")
     fun pipeline(): Pipeline<String> = Pipeline(callPhase)
     fun Pipeline<String>.intercept(block: PipelineInterceptor<String>) = phases.intercept(callPhase, block)
-    fun <T : Any> Pipeline<T>.executeBlocking(subject: T) = runBlocking { execute(subject) }
+    fun <T : Any> Pipeline<T>.executeBlocking(subject: T) = runBlocking { execute(call, subject) }
 
     @Test
     fun emptyPipeline() {
@@ -100,12 +104,12 @@ class PipelineTest {
                         events.add("intercept-p3-2 $nested2")
                         proceed()
                     }
-                    p3.execute("p3")
+                    p3.execute(call, "p3")
                     proceed()
                     events.add("success-p2-1 $nested")
                 }
 
-                p2.execute("p2")
+                p2.execute(call, "p2")
                 proceed()
                 events.add("success-p1-1 $subject")
             } catch(t: Throwable) {
@@ -233,7 +237,7 @@ class PipelineTest {
                 events.add("intercept3 $nested")
                 proceed()
             }
-            secondary.execute("another")
+            secondary.execute(call, "another")
             proceed()
         }
 
@@ -263,7 +267,7 @@ class PipelineTest {
             events.add("intercept2 $subject")
             pipeline().apply {
                 intercept { nested -> events.add("intercept3 $nested") }
-            }.execute("another")
+            }.execute(call, "another")
             proceed()
         }
 
@@ -300,7 +304,7 @@ class PipelineTest {
                     events.add("intercept3 $nested")
                     throw UnsupportedOperationException()
                 }
-            }.execute("another")
+            }.execute(call, "another")
             proceed()
         }
 
@@ -355,7 +359,7 @@ class PipelineTest {
                     events.add("intercept2 $subject")
                 }
             }
-            secondary.execute("another")
+            secondary.execute(call, "another")
             proceed()
         }
 

@@ -45,7 +45,7 @@ abstract class KtorServlet : HttpServlet() {
 
             launch(dispatcher) {
                 try {
-                    hostPipeline.execute(call)
+                    hostPipeline.execute(call, call)
                 } finally {
                     asyncContext?.complete()
                 }

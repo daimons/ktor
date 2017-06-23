@@ -38,7 +38,7 @@ fun AuthenticationPipeline.digestAuthentication(
 
     val digester = digesterProvider(digestAlgorithm)
     intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val authorizationHeader = context.call.request.parseAuthorizationHeader()
+        val authorizationHeader = call.request.parseAuthorizationHeader()
         val credentials = authorizationHeader?.let { authHeader ->
             if (authHeader.authScheme == AuthScheme.Digest && authHeader is HttpAuthHeader.Parameterized) {
                 authHeader.toDigestCredential()
@@ -47,7 +47,7 @@ fun AuthenticationPipeline.digestAuthentication(
         }
 
         val principal = credentials?.let {
-            if ((it.algorithm ?: "MD5") == digestAlgorithm && it.verify(context.call.request.local.method, digester, userNameRealmPasswordDigestProvider))
+            if ((it.algorithm ?: "MD5") == digestAlgorithm && it.verify(call.request.local.method, digester, userNameRealmPasswordDigestProvider))
                 UserIdPrincipal(it.userName)
             else
                 null
@@ -63,7 +63,7 @@ fun AuthenticationPipeline.digestAuthentication(
 
             context.challenge(DigestAuthKey, cause) {
                 it.success()
-                context.call.respond(UnauthorizedResponse(HttpAuthHeader.digestAuthChallenge(realm)))
+                call.respond(UnauthorizedResponse(HttpAuthHeader.digestAuthChallenge(realm)))
             }
         }
     }

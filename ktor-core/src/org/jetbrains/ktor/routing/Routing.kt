@@ -5,7 +5,7 @@ import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.util.*
 
 class Routing(val application: Application) : Route(parent = null, selector = RootRouteSelector) {
-    suspend private fun interceptor(context: PipelineContext<ApplicationCall>) {
+    suspend private fun interceptor(context: PipelineContext<Unit>) {
         val call = context.call
         val resolveContext = RoutingResolveContext(this, call, call.parameters, call.request.headers)
         val resolveResult = resolveContext.resolve()
@@ -14,7 +14,7 @@ class Routing(val application: Application) : Route(parent = null, selector = Ro
         }
     }
 
-    suspend private fun executeResult(context: PipelineContext<ApplicationCall>, route: Route, parameters: ValuesMap) {
+    suspend private fun executeResult(context: PipelineContext<Unit>, route: Route, parameters: ValuesMap) {
         val routingCallPipeline = route.buildPipeline()
         val receivePipeline = ApplicationReceivePipeline().apply {
             phases.merge(context.call.receivePipeline.phases)

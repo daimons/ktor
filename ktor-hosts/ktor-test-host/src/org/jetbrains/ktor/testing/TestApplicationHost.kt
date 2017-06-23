@@ -1,9 +1,9 @@
 package org.jetbrains.ktor.testing
 
 import kotlinx.coroutines.experimental.*
-import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.host.*
 import org.jetbrains.ktor.http.*
+import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.util.*
 import java.util.concurrent.*
 
@@ -27,7 +27,7 @@ class TestApplicationHost(environment: ApplicationHostEnvironment = createTestEn
     fun handleRequest(setup: TestApplicationRequest.() -> Unit): TestApplicationCall {
         val call = createCall(setup)
         runBlocking {
-            pipeline.execute(call)
+            pipeline.execute(call, call)
         }
         return call
     }
@@ -42,7 +42,7 @@ class TestApplicationHost(environment: ApplicationHostEnvironment = createTestEn
             setup()
         }
 
-        runBlocking(Unconfined) { pipeline.execute(call) }
+        runBlocking(Unconfined) { pipeline.execute(call, call) }
 
         return call
     }

@@ -41,7 +41,7 @@ interface ApplicationResponse {
     fun push(block: ResponsePushBuilder.() -> Unit) {}
 }
 
-open class ApplicationResponsePipeline : Pipeline<ApplicationSendRequest>(Before, Transform, Render, ContentEncoding, TransferEncoding, After, Host) {
+open class ApplicationResponsePipeline : Pipeline<Any>(Before, Transform, Render, ContentEncoding, TransferEncoding, After, Host) {
     companion object Phases {
         val Before = PipelinePhase("Before")
 
@@ -59,6 +59,5 @@ open class ApplicationResponsePipeline : Pipeline<ApplicationSendRequest>(Before
     }
 }
 
-data class ApplicationSendRequest(val call: ApplicationCall, val value: Any)
 
 

@@ -44,14 +44,14 @@ inline fun <S : Any> ApplicationCallPipeline.withSessions(type: KClass<S>, block
 }
 
 fun <S : Any> ApplicationCallPipeline.withSessions(sessionConfig: SessionConfig<S>) {
-    intercept(ApplicationCallPipeline.Infrastructure) { call ->
+    intercept(ApplicationCallPipeline.Infrastructure) {
         call.attributes.put(SessionConfigKey, sessionConfig)
         sessionConfig.sessionTracker.lookup(this) {
             call.attributes.put(SessionKey, it)
         }
     }
 
-    responsePipeline.intercept(ApplicationResponsePipeline.Before) { (call, _) ->
+    responsePipeline.intercept(ApplicationResponsePipeline.Before) {
         if (call.attributes.contains(SessionKey)) {
             val session = call.sessionOrNull(sessionConfig.sessionType)
             if (session != null) {

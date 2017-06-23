@@ -27,7 +27,7 @@ class ShutDownUrl(val url: String, val exitCode: ApplicationCall.() -> Int) {
             configure(config)
 
             val feature = ShutDownUrl(config.shutDownUrl, config.exitCodeSupplier)
-            pipeline.intercept(HostPipeline.Before) { call ->
+            pipeline.intercept(HostPipeline.Before) {
                 if (call.request.uri == feature.url) {
                     feature.doShutdown(call)
                 }
@@ -45,7 +45,7 @@ class ShutDownUrl(val url: String, val exitCode: ApplicationCall.() -> Int) {
             configure(config)
 
             val feature = ShutDownUrl(config.shutDownUrl, config.exitCodeSupplier)
-            pipeline.intercept(ApplicationCallPipeline.Infrastructure) { call ->
+            pipeline.intercept(ApplicationCallPipeline.Infrastructure) {
                 if (call.request.uri == feature.url) {
                     feature.doShutdown(call)
                 }

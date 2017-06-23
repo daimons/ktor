@@ -26,7 +26,7 @@ class CORS(configuration: Configuration) {
     private val exposedHeaders = if (configuration.exposedHeaders.isNotEmpty()) configuration.exposedHeaders.sorted().joinToString(", ") else null
     private val hostsNormalized = HashSet<String>(configuration.hosts.map { normalizeOrigin(it) })
 
-    suspend fun intercept(context: PipelineContext<ApplicationCall>) {
+    suspend fun intercept(context: PipelineContext<Unit>) {
         val call = context.call
         val origin = call.request.headers.getAll(HttpHeaders.Origin)?.singleOrNull()
                 ?.takeIf(this::isValidOrigin)
@@ -122,7 +122,7 @@ class CORS(configuration: Configuration) {
         return requestMethod != null && !(requestMethod !in methods)
     }
 
-    suspend private fun PipelineContext<ApplicationCall>.respondCorsFailed() {
+    suspend private fun PipelineContext<Unit>.respondCorsFailed() {
         call.respond(HttpStatusCode.Forbidden)
         finish()
     }

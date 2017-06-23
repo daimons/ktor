@@ -50,8 +50,9 @@ class Compression(compression: Configuration) {
     private val options = compression.build()
     private val comparator = compareBy<Pair<CompressionEncoderConfig, HeaderValue>>({ it.second.quality }, { it.first.priority }).reversed()
 
-    private suspend fun interceptor(context: PipelineContext<ApplicationSendRequest>) {
-        val (call, message) = context.subject
+    private suspend fun interceptor(context: PipelineContext<Any>) {
+        val call = context.call
+        val message = context.subject
         val acceptEncodingRaw = call.request.acceptEncoding()
         if (acceptEncodingRaw == null || call.isCompressionSuppressed())
             return
@@ -84,7 +85,7 @@ class Compression(compression: Configuration) {
                 is FinalContent.WriteChannelContent -> {
                     if (encoderOptions != null) {
                         val response = CompressedWriteResponse(message, message.status, encoderOptions.name, encoderOptions.encoder)
-                        context.proceedWith(ApplicationSendRequest(call, response))
+                        context.proceedWith(response)
                     }
                     return
                 }
@@ -95,7 +96,7 @@ class Compression(compression: Configuration) {
 
             if (encoderOptions != null) {
                 val response = CompressedResponse(channel, message.headers, message.status, encoderOptions.name, encoderOptions.encoder)
-                context.proceedWith(ApplicationSendRequest(call, response))
+                context.proceedWith(response)
             }
 
         }

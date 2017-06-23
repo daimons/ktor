@@ -18,7 +18,7 @@ class StatusPageTest {
             application.install(StatusPages) {
                 statusFile(HttpStatusCode.NotFound, filePattern = "error#.html")
             }
-            application.intercept(ApplicationCallPipeline.Call) { call ->
+            application.intercept(ApplicationCallPipeline.Call) {
                 call.respond(HttpStatusCode.NotFound)
             }
             handleRequest(HttpMethod.Get, "/foo").let { call ->
@@ -30,7 +30,7 @@ class StatusPageTest {
     @Test
     fun testStatus404() {
         withTestApplication {
-            application.intercept(ApplicationCallPipeline.Fallback) { call ->
+            application.intercept(ApplicationCallPipeline.Fallback) {
                 call.respond(HttpStatusCode.NotFound)
             }
 
@@ -94,7 +94,7 @@ class StatusPageTest {
         class O
 
         withTestApplication {
-            application.intercept(ApplicationCallPipeline.Fallback) { call ->
+            application.intercept(ApplicationCallPipeline.Fallback) {
                 call.respond(HttpStatusCode.NotFound)
             }
 
@@ -105,9 +105,9 @@ class StatusPageTest {
             }
 
             application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { (_, message) ->
+                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { message ->
                     if (message is O)
-                        proceedWith(ApplicationSendRequest(call, HttpStatusCode.NotFound))
+                        proceedWith(HttpStatusCode.NotFound)
                 }
             }
 
@@ -157,7 +157,7 @@ class StatusPageTest {
 
         withTestApplication {
             application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { (_, message) ->
+                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { message ->
                     if (message is O)
                         throw IllegalStateException()
                 }
@@ -193,7 +193,7 @@ class StatusPageTest {
                 }
             }
 
-            application.intercept(ApplicationCallPipeline.Fallback) { call ->
+            application.intercept(ApplicationCallPipeline.Fallback) {
                 call.respond(HttpStatusCode.NotFound)
             }
 

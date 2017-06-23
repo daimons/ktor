@@ -11,7 +11,7 @@ fun AuthenticationPipeline.formAuthentication(userParamName: String = "user",
                                               challenge: FormAuthChallenge = FormAuthChallenge.Unauthorized,
                                               validate: (UserPasswordCredential) -> Principal?) {
     intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val postParameters = context.call.request.tryReceive<ValuesMap>()
+        val postParameters = call.request.tryReceive<ValuesMap>()
         val username = postParameters?.get(userParamName)
         val password = postParameters?.get(passwordParamName)
 
@@ -25,8 +25,8 @@ fun AuthenticationPipeline.formAuthentication(userParamName: String = "user",
                 it.success()
 
                 when (challenge) {
-                    FormAuthChallenge.Unauthorized -> context.call.respond(HttpStatusCode.Unauthorized)
-                    is FormAuthChallenge.Redirect -> context.call.respondRedirect(challenge.url(context.call, credentials))
+                    FormAuthChallenge.Unauthorized -> call.respond(HttpStatusCode.Unauthorized)
+                    is FormAuthChallenge.Redirect -> call.respondRedirect(challenge.url(call, credentials))
                 }
             }
         }

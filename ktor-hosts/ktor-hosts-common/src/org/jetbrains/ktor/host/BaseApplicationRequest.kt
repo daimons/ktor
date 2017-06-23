@@ -40,6 +40,6 @@ fun ApplicationReceivePipeline.installDefaultTransformations() {
             else -> null
         }
         if (transformed != null)
-            proceedWith(ApplicationReceiveRequest(query.call, query.type, transformed))
+            proceedWith(ApplicationReceiveRequest(query.type, transformed))
     }
 }

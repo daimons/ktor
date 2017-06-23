@@ -69,7 +69,7 @@ class NettyHostHttp2Handler(private val host: NettyApplicationHost, private val 
 
     private fun ChannelHandlerContext.executeCall(call: ApplicationCall) {
         launchAsync(channel().eventLoop().parent()) {
-            hostPipeline.execute(call)
+            hostPipeline.execute(call, call)
         }
     }
 

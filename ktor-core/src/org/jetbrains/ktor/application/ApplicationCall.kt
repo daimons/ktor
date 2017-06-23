@@ -1,6 +1,5 @@
 package org.jetbrains.ktor.application
 
-import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.util.*
 
 /**
@@ -47,6 +46,6 @@ interface ApplicationCall {
  * Sends a [message] as a response
  */
 suspend fun ApplicationCall.respond(message: Any) {
-    responsePipeline.execute(ApplicationSendRequest(this, message))
+    responsePipeline.execute(this, message)
 }
 

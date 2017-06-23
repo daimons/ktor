@@ -51,7 +51,7 @@ class HttpsRedirectFeatureTest {
     fun testDirectPathAndQuery() {
         withTestApplication {
             application.install(HttpsRedirect)
-            application.intercept(ApplicationCallPipeline.Fallback) { call ->
+            application.intercept(ApplicationCallPipeline.Fallback) {
                 call.respond("ok")
             }
 

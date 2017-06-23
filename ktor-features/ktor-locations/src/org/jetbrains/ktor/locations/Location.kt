@@ -15,7 +15,7 @@ inline fun <reified T : Any> Route.location(noinline body: Route.() -> Unit): Ro
     return location(T::class, body)
 }
 
-inline fun <reified T : Any> Route.get(noinline body: suspend PipelineContext<ApplicationCall>.(T) -> Unit): Route {
+inline fun <reified T : Any> Route.get(noinline body: suspend PipelineContext<Unit>.(T) -> Unit): Route {
     return location(T::class) {
         method(HttpMethod.Get) {
             handle(body)
@@ -23,7 +23,7 @@ inline fun <reified T : Any> Route.get(noinline body: suspend PipelineContext<Ap
     }
 }
 
-inline fun <reified T : Any> Route.post(noinline body: suspend PipelineContext<ApplicationCall>.(T) -> Unit): Route {
+inline fun <reified T : Any> Route.post(noinline body: suspend PipelineContext<Unit>.(T) -> Unit): Route {
     return location(T::class) {
         method(HttpMethod.Post) {
             handle {
@@ -39,11 +39,11 @@ fun <T : Any> Route.location(data: KClass<T>, body: Route.() -> Unit): Route {
     return entry.apply(body)
 }
 
-inline fun <reified T : Any> Route.handle(noinline body: suspend PipelineContext<ApplicationCall>.(T) -> Unit) {
+inline fun <reified T : Any> Route.handle(noinline body: suspend PipelineContext<Unit>.(T) -> Unit) {
     return handle(T::class, body)
 }
 
-fun <T : Any> Route.handle(dataClass: KClass<T>, body: suspend PipelineContext<ApplicationCall>.(T) -> Unit) {
+fun <T : Any> Route.handle(dataClass: KClass<T>, body: suspend PipelineContext<Unit>.(T) -> Unit) {
     handle {
         val location = locations().resolve<T>(dataClass, call)
         body(location)

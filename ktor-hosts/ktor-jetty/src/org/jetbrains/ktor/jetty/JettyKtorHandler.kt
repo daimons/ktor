@@ -56,7 +56,7 @@ internal class JettyKtorHandler(val environment: ApplicationHostEnvironment, val
 
             launch(dispatcher) {
                 try {
-                    pipeline().execute(call)
+                    pipeline().execute(call, call)
                 } finally {
                     request.asyncContext?.complete()
                 }
