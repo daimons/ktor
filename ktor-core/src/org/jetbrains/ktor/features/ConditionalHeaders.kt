@@ -22,7 +22,7 @@ class ConditionalHeaders {
             val feature = ConditionalHeaders()
             // Intercept response pipeline and after the content is ready to be served
             // check if it needs to be served according to conditions
-            pipeline.responsePipeline.intercept(ApplicationResponsePipeline.After) { message ->
+            pipeline.sendPipeline.intercept(ApplicationSendPipeline.After) { message ->
                 // Check if any conditional header is present
                 if (!headers.any { it in call.request.headers })
                     return@intercept

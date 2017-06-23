@@ -1,13 +1,13 @@
 package org.jetbrains.ktor.host
 
-import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.http.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 import java.io.*
 
-fun ApplicationResponsePipeline.installDefaultTransformations() {
-    intercept(ApplicationResponsePipeline.Transform) { value ->
+fun ApplicationSendPipeline.installDefaultTransformations() {
+    intercept(ApplicationSendPipeline.Transform) { value ->
         val transformed = when (value) {
             is String -> {
                 val responseContentType = call.response.headers[HttpHeaders.ContentType]?.let { ContentType.parse(it) }

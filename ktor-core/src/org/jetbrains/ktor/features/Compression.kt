@@ -6,6 +6,7 @@ import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.http.*
 import org.jetbrains.ktor.pipeline.*
 import org.jetbrains.ktor.request.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 
 /**
@@ -138,7 +139,7 @@ class Compression(compression: Configuration) {
                 config.default()
 
             val feature = Compression(config)
-            pipeline.responsePipeline.intercept(ApplicationResponsePipeline.ContentEncoding) {
+            pipeline.sendPipeline.intercept(ApplicationSendPipeline.ContentEncoding) {
                 feature.interceptor(this)
             }
             return feature

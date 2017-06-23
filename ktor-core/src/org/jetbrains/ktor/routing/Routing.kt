@@ -2,6 +2,8 @@ package org.jetbrains.ktor.routing
 
 import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.pipeline.*
+import org.jetbrains.ktor.request.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 
 class Routing(val application: Application) : Route(parent = null, selector = RootRouteSelector) {
@@ -20,9 +22,9 @@ class Routing(val application: Application) : Route(parent = null, selector = Ro
             phases.merge(context.call.receivePipeline.phases)
             phases.merge(routingCallPipeline.receivePipeline.phases)
         }
-        val responsePipeline = ApplicationResponsePipeline().apply {
-            phases.merge(context.call.responsePipeline.phases)
-            phases.merge(routingCallPipeline.responsePipeline.phases)
+        val responsePipeline = ApplicationSendPipeline().apply {
+            phases.merge(context.call.sendPipeline.phases)
+            phases.merge(routingCallPipeline.sendPipeline.phases)
         }
         val routingCall = RoutingApplicationCall(context.call, receivePipeline, responsePipeline, route, parameters)
         routingCallPipeline.execute(routingCall)

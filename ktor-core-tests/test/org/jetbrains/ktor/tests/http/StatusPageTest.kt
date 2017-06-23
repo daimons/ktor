@@ -5,6 +5,7 @@ import org.jetbrains.ktor.cio.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.features.*
 import org.jetbrains.ktor.http.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
 import org.jetbrains.ktor.testing.*
 import org.jetbrains.ktor.util.*
@@ -105,7 +106,7 @@ class StatusPageTest {
             }
 
             application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { message ->
+                call.sendPipeline.intercept(ApplicationSendPipeline.Transform) { message ->
                     if (message is O)
                         proceedWith(HttpStatusCode.NotFound)
                 }
@@ -157,7 +158,7 @@ class StatusPageTest {
 
         withTestApplication {
             application.intercept(ApplicationCallPipeline.Infrastructure) {
-                call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { message ->
+                call.sendPipeline.intercept(ApplicationSendPipeline.Transform) { message ->
                     if (message is O)
                         throw IllegalStateException()
                 }

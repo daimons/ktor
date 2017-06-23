@@ -4,6 +4,7 @@ import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.cio.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.http.*
+import org.jetbrains.ktor.request.*
 import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 import sun.plugin.dom.exception.*
@@ -19,9 +20,9 @@ abstract class BaseApplicationCall(override val application: Application) : Appl
         phases.merge(application.receivePipeline.phases)
     }
 
-    override final val responsePipeline = ApplicationResponsePipeline().apply {
-        phases.merge(application.responsePipeline.phases)
-        intercept(ApplicationResponsePipeline.Host) {
+    override final val sendPipeline = ApplicationSendPipeline().apply {
+        phases.merge(application.sendPipeline.phases)
+        intercept(ApplicationSendPipeline.Host) {
             if (responded)
                 throw InvalidStateException("Response is already sent")
             responded = true

@@ -6,13 +6,15 @@ import org.jetbrains.ktor.cio.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.host.*
 import org.jetbrains.ktor.http.*
+import org.jetbrains.ktor.request.*
+import org.jetbrains.ktor.response.*
 import java.io.*
 import java.time.*
 import java.util.concurrent.*
 
 class TestApplicationCall(application: Application) : BaseApplicationCall(application) {
     init {
-        responsePipeline.intercept(ApplicationResponsePipeline.Host) {
+        sendPipeline.intercept(ApplicationSendPipeline.Host) {
             requestHandled = true
             response.close()
         }

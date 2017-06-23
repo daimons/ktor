@@ -1,17 +1,19 @@
 package org.jetbrains.ktor.application
 
 import org.jetbrains.ktor.pipeline.*
+import org.jetbrains.ktor.request.*
+import org.jetbrains.ktor.response.*
 
 open class ApplicationCallPipeline : Pipeline<Unit>(Infrastructure, Call, Fallback) {
     /**
-     * Pipeline for transforming request content into receive objects
+     * Pipeline for receiving content
      */
     val receivePipeline = ApplicationReceivePipeline()
 
     /**
-     * Pipeline for transforming responded object into [FinalContent]
+     * Pipeline for sending content
      */
-    val responsePipeline = ApplicationResponsePipeline()
+    val sendPipeline = ApplicationSendPipeline()
 
     companion object ApplicationPhase {
         val Infrastructure = PipelinePhase("Infrastructure")

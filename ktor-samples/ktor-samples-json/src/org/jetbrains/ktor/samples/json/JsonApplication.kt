@@ -7,6 +7,7 @@ import org.jetbrains.ktor.features.*
 import org.jetbrains.ktor.http.*
 import org.jetbrains.ktor.logging.*
 import org.jetbrains.ktor.request.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
 
 data class Model(val name: String, val items: List<Item>)
@@ -28,7 +29,7 @@ fun Application.main() {
     val gson = GsonBuilder().create()
     intercept(ApplicationCallPipeline.Infrastructure) {
         if (call.request.acceptItems().any { it.value == "application/json" }) {
-            call.responsePipeline.intercept(ApplicationResponsePipeline.Transform) { message ->
+            call.sendPipeline.intercept(ApplicationSendPipeline.Transform) { message ->
                 TextContent(gson.toJson(message), ContentType.Application.Json)
             }
         }

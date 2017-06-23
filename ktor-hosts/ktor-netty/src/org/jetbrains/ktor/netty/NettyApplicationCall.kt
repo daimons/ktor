@@ -9,6 +9,7 @@ import org.jetbrains.ktor.cio.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.host.*
 import org.jetbrains.ktor.pipeline.*
+import org.jetbrains.ktor.response.*
 import java.io.*
 import java.util.concurrent.atomic.*
 import kotlin.coroutines.experimental.*
@@ -28,7 +29,7 @@ internal class NettyApplicationCall(application: Application,
     override val bufferPool = NettyByteBufferPool(context)
 
     init {
-        responsePipeline.intercept(ApplicationResponsePipeline.Host) {
+        sendPipeline.intercept(ApplicationSendPipeline.Host) {
             try {
 
             } finally {

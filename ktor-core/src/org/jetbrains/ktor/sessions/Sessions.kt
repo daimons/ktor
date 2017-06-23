@@ -1,6 +1,7 @@
 package org.jetbrains.ktor.sessions
 
 import org.jetbrains.ktor.application.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 import kotlin.reflect.*
 
@@ -51,7 +52,7 @@ fun <S : Any> ApplicationCallPipeline.withSessions(sessionConfig: SessionConfig<
         }
     }
 
-    responsePipeline.intercept(ApplicationResponsePipeline.Before) {
+    sendPipeline.intercept(ApplicationSendPipeline.Before) {
         if (call.attributes.contains(SessionKey)) {
             val session = call.sessionOrNull(sessionConfig.sessionType)
             if (session != null) {

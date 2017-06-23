@@ -37,7 +37,7 @@ open class ServletApplicationHost : KtorServlet() {
         }.apply {
             monitor.applicationStarting += {
                 it.receivePipeline.installDefaultTransformations()
-                it.responsePipeline.installDefaultTransformations()
+                it.sendPipeline.installDefaultTransformations()
             }
         }
     }

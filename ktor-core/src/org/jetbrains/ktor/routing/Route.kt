@@ -58,7 +58,7 @@ open class Route(val parent: Route?, val selector: RouteSelector) : ApplicationC
                 val routePipeline = routePipelines[index]
                 pipeline.phases.merge(routePipeline.phases)
                 pipeline.receivePipeline.phases.merge(routePipeline.receivePipeline.phases)
-                pipeline.responsePipeline.phases.merge(routePipeline.responsePipeline.phases)
+                pipeline.sendPipeline.phases.merge(routePipeline.sendPipeline.phases)
             }
 
             val handlers = handlers

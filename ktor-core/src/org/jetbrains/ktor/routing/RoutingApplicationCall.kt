@@ -1,6 +1,8 @@
 package org.jetbrains.ktor.routing
 
 import org.jetbrains.ktor.application.*
+import org.jetbrains.ktor.request.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 
 /**
@@ -8,7 +10,7 @@ import org.jetbrains.ktor.util.*
  */
 open class RoutingApplicationCall(val call: ApplicationCall,
                                   override val receivePipeline: ApplicationReceivePipeline,
-                                  override val responsePipeline: ApplicationResponsePipeline,
+                                  override val sendPipeline: ApplicationSendPipeline,
                                   val route: Route,
                                   private val resolvedValues: ValuesMap) : ApplicationCall by call {
     override val parameters: ValuesMap by lazy {

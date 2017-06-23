@@ -34,8 +34,8 @@ class PartialContentSupport(val maxRangeCount: Int) {
         if (rangeSpecifier != null) {
             if (call.isGetOrHead()) {
                 call.attributes.put(Compression.SuppressionAttribute, true)
-                call.responsePipeline.registerPhase()
-                call.responsePipeline.intercept(PartialContentPhase) { message ->
+                call.sendPipeline.registerPhase()
+                call.sendPipeline.intercept(PartialContentPhase) { message ->
                     if (message is FinalContent.ReadChannelContent && message !is RangeChannelProvider) {
                         message.contentLength()?.let { length -> tryProcessRange(message, call, rangeSpecifier, length) }
                     }
@@ -46,8 +46,8 @@ class PartialContentSupport(val maxRangeCount: Int) {
                 context.finish()
             }
         } else {
-            call.responsePipeline.registerPhase()
-            call.responsePipeline.intercept(PartialContentPhase) { message ->
+            call.sendPipeline.registerPhase()
+            call.sendPipeline.intercept(PartialContentPhase) { message ->
                 if (message is FinalContent.ReadChannelContent && message !is RangeChannelProvider) {
                     proceedWith(RangeChannelProvider.ByPass(message))
                 }
@@ -55,8 +55,8 @@ class PartialContentSupport(val maxRangeCount: Int) {
         }
     }
 
-    private fun ApplicationResponsePipeline.registerPhase() {
-        phases.insertAfter(ApplicationResponsePipeline.ContentEncoding, PartialContentPhase)
+    private fun ApplicationSendPipeline.registerPhase() {
+        phases.insertAfter(ApplicationSendPipeline.ContentEncoding, PartialContentPhase)
     }
 
     suspend private fun PipelineContext<Any>.tryProcessRange(obj: FinalContent.ReadChannelContent, call: ApplicationCall, rangesSpecifier: RangesSpecifier, length: Long): Unit {

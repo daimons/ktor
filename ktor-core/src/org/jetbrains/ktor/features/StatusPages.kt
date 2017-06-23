@@ -4,6 +4,7 @@ import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.content.*
 import org.jetbrains.ktor.http.*
 import org.jetbrains.ktor.pipeline.*
+import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.util.*
 import java.util.*
 
@@ -32,7 +33,7 @@ class StatusPages(config: Configuration) {
 
     suspend private fun intercept(context: PipelineContext<Unit>) {
         var statusHandled = false
-        context.call.responsePipeline.intercept(ApplicationResponsePipeline.After) { message ->
+        context.call.sendPipeline.intercept(ApplicationSendPipeline.After) { message ->
             if (!statusHandled) {
                 val status = when (message) {
                     is FinalContent -> message.status

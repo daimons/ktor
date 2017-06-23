@@ -19,7 +19,7 @@ abstract class BaseApplicationHost(override final val environment: ApplicationHo
     init {
         environment.monitor.applicationStarting += {
             it.receivePipeline.installDefaultTransformations()
-            it.responsePipeline.installDefaultTransformations()
+            it.sendPipeline.installDefaultTransformations()
         }
     }
 

@@ -1,8 +1,7 @@
-package org.jetbrains.ktor.application
+package org.jetbrains.ktor.response
 
+import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.http.*
-import org.jetbrains.ktor.pipeline.*
-import org.jetbrains.ktor.response.*
 
 /**
  * Represents server's response
@@ -39,24 +38,6 @@ interface ApplicationResponse {
      * Exact behaviour is up to host implementation.
      */
     fun push(block: ResponsePushBuilder.() -> Unit) {}
-}
-
-open class ApplicationResponsePipeline : Pipeline<Any>(Before, Transform, Render, ContentEncoding, TransferEncoding, After, Host) {
-    companion object Phases {
-        val Before = PipelinePhase("Before")
-
-        val Transform = PipelinePhase("Transform")
-
-        val Render = PipelinePhase("Render")
-
-        val ContentEncoding = PipelinePhase("ContentEncoding")
-
-        val TransferEncoding = PipelinePhase("TransferEncoding")
-
-        val After = PipelinePhase("After")
-
-        val Host = PipelinePhase("Host")
-    }
 }
 
 
